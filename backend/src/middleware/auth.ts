@@ -4,7 +4,6 @@ import { env } from "../config/env";
 
 export interface AuthPayload {
   userId: string;
-  // add any additional fields you want to encode in the token
 }
 
 export interface AuthenticatedRequest extends Request {
