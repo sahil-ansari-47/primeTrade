@@ -96,6 +96,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           zIndex: (t) => t.zIndex.drawer + 1,
           borderBottom: "1px solid",
           borderColor: "divider",
+          borderRadius: "0px",
           backdropFilter: "blur(8px)",
           backgroundColor: "rgba(255, 247, 237, 0.8)",
         }}
@@ -138,6 +139,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             display: { xs: "block", md: "none" },
             "& .MuiDrawer-paper": {
               boxSizing: "border-box",
+              borderRadius: "0px",
               width: drawerWidth,
               top: { xs: 56, sm: 64 },
               height: { xs: "calc(100% - 56px)", sm: "calc(100% - 64px)" },
@@ -154,6 +156,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             "& .MuiDrawer-paper": {
               boxSizing: "border-box",
               width: drawerWidth,
+              borderRadius: "0px",
               borderRight: "1px solid",
               borderColor: "divider",
               backgroundImage: "linear-gradient(180deg, #FFF7ED 0%, #FFFFFF 70%)",
