@@ -6,13 +6,19 @@ import { initMongo } from "./db/mongo";
 import { authMiddleware, signToken, AuthenticatedRequest } from "./middleware/auth";
 import { User } from "./models/user";
 import { Task } from "./models/task";
-
+import morgan from "morgan";
+import logger from "./lib/logger";
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
+app.use(morgan("dev", {
+  stream: { write: (message) => logger.info(message.trim()) }
+}));
+
 app.get("/health", (_req, res) => {
+  logger.info("Health Check");
   res.json({ status: "ok" });
 });
 
@@ -40,7 +46,7 @@ app.post("/auth/register", async (req, res) => {
     });
 
     const token = signToken({ userId: user._id.toString() });
-
+    logger.info(`User registered successfully: ${user.email} (ID: ${user._id})`);
     return res.status(201).json({
       token,
       user: {
@@ -49,6 +55,7 @@ app.post("/auth/register", async (req, res) => {
       },
     });
   } catch (err) {
+    logger.error(`Register Error: ${err}`);
     console.error("Register error:", err);
     return res.status(500).json({ message: "Internal server error" });
   }
@@ -58,25 +65,20 @@ app.post("/auth/register", async (req, res) => {
 app.post("/auth/login", async (req, res) => {
   try {
     const { email, password } = req.body;
-
     if (!email || !password) {
       return res.status(400).json({ message: "Email and password are required" });
     }
-
     const normalizedEmail = String(email).toLowerCase().trim();
     const user = await User.findOne({ email: normalizedEmail });
-
     if (!user) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
-
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
-
     const token = signToken({ userId: user._id.toString() });
-
+    logger.info(`User logged in: ${user.email}`);
     return res.json({
       token,
       user: {
@@ -85,6 +87,7 @@ app.post("/auth/login", async (req, res) => {
       },
     });
   } catch (err) {
+    logger.error(`Login Error: ${err}`);
     console.error("Login error:", err);
     return res.status(500).json({ message: "Internal server error" });
   }
@@ -101,7 +104,7 @@ app.get("/auth/me", authMiddleware, async (req: AuthenticatedRequest, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-
+    logger.info(`Auth/me profile fetched for: ${user.email}`);
     return res.json({
       user: {
         id: user._id,
@@ -111,18 +114,16 @@ app.get("/auth/me", authMiddleware, async (req: AuthenticatedRequest, res) => {
       },
     });
   } catch (err) {
+    logger.error(`Auth/me Error: ${err}`);
     console.error("Auth/me error:", err);
     return res.status(500).json({ message: "Internal server error" });
   }
 });
 
-// Simple logout endpoint (for completeness; with JWTs this is usually handled client-side)
 app.post("/auth/logout", (_req, res) => {
-  // For stateless JWT auth, logout is typically handled by the client deleting the token.
+  logger.info("User logged out");
   return res.status(200).json({ message: "Logged out" });
 });
-
-// ----- Protected task routes (CRUD) -----
 
 // List tasks for the authenticated user
 app.get("/tasks", authMiddleware, async (req: AuthenticatedRequest, res) => {
@@ -130,10 +131,11 @@ app.get("/tasks", authMiddleware, async (req: AuthenticatedRequest, res) => {
     if (!req.user?.userId) {
       return res.status(401).json({ message: "Unauthorized" });
     }
-
     const tasks = await Task.find({ userId: req.user.userId }).sort({ createdAt: -1 });
+    logger.info(`Fetched ${tasks.length} tasks for UserID: ${req.user?.userId}`);
     return res.json({ tasks });
   } catch (err) {
+    logger.error(`List Tasks Error: ${err}`);
     console.error("List tasks error:", err);
     return res.status(500).json({ message: "Internal server error" });
   }
@@ -157,9 +159,10 @@ app.post("/tasks", authMiddleware, async (req: AuthenticatedRequest, res) => {
       userId: req.user.userId,
       title: trimmedTitle,
     });
-
+    logger.info(`Task created: "${task.title}" by UserID: ${req.user?.userId}`);
     return res.status(201).json({ task });
   } catch (err) {
+    logger.error(`Create Task Error: ${err}`);
     console.error("Create task error:", err);
     return res.status(500).json({ message: "Internal server error" });
   }
@@ -196,9 +199,10 @@ app.patch("/tasks/:id", authMiddleware, async (req: AuthenticatedRequest, res) =
     if (!task) {
       return res.status(404).json({ message: "Task not found" });
     }
-
+    logger.info(`Task updated: ${task._id} (Completed: ${task.completed})`);
     return res.json({ task });
   } catch (err) {
+    logger.error(`Update Task Error: ${err}`);
     console.error("Update task error:", err);
     return res.status(500).json({ message: "Internal server error" });
   }
@@ -217,9 +221,10 @@ app.delete("/tasks/:id", authMiddleware, async (req: AuthenticatedRequest, res) 
     if (!task) {
       return res.status(404).json({ message: "Task not found" });
     }
-
+    logger.info(`Task deleted: ${req.params.id} by UserID: ${req.user?.userId}`);
     return res.status(204).send();
   } catch (err) {
+    logger.error(`Delete Task Error: ${err}`);
     console.error("Delete task error:", err);
     return res.status(500).json({ message: "Internal server error" });
   }
@@ -228,11 +233,13 @@ app.delete("/tasks/:id", authMiddleware, async (req: AuthenticatedRequest, res) 
 async function bootstrap() {
   try {
     await initMongo();
-
+    logger.info("Connected to MongoDB Database");
     app.listen(env.port, () => {
+      logger.info(`Server is running on port ${env.port}`);
       console.log(`Server is running on port ${env.port}`);
     });
   } catch (err) {
+    logger.error(`Bootstrap Failure: ${err}`);
     console.error("Failed to start server", err);
     process.exit(1);
   }

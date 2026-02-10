@@ -1,0 +1,16 @@
+{"level":"info","message":"Connected to MongoDB Database","timestamp":"2026-02-10T17:39:42.914Z"}
+{"level":"info","message":"Server is running on port 4000","timestamp":"2026-02-10T17:39:42.918Z"}
+{"level":"info","message":"\u001b[0mGET /auth/me \u001b[33m401\u001b[0m 3.458 ms - 38\u001b[0m","timestamp":"2026-02-10T17:39:53.928Z"}
+{"level":"info","message":"\u001b[0mGET /auth/me \u001b[33m401\u001b[0m 0.744 ms - 38\u001b[0m","timestamp":"2026-02-10T17:39:53.931Z"}
+{"level":"info","message":"User logged in: sahilansari28112003@gmail.com","timestamp":"2026-02-10T17:40:04.207Z"}
+{"level":"info","message":"\u001b[0mPOST /auth/login \u001b[32m200\u001b[0m 126.161 ms - 269\u001b[0m","timestamp":"2026-02-10T17:40:04.208Z"}
+{"level":"info","message":"Fetched 2 tasks for UserID: 698b58a4c9a41708266b6abc","timestamp":"2026-02-10T17:40:06.200Z"}
+{"level":"info","message":"\u001b[0mGET /tasks \u001b[36m304\u001b[0m 51.673 ms - -\u001b[0m","timestamp":"2026-02-10T17:40:06.203Z"}
+{"level":"info","message":"Fetched 2 tasks for UserID: 698b58a4c9a41708266b6abc","timestamp":"2026-02-10T17:40:06.249Z"}
+{"level":"info","message":"\u001b[0mGET /tasks \u001b[36m304\u001b[0m 44.814 ms - -\u001b[0m","timestamp":"2026-02-10T17:40:06.250Z"}
+{"level":"info","message":"Task created: \"new task\" by UserID: 698b58a4c9a41708266b6abc","timestamp":"2026-02-10T17:40:11.040Z"}
+{"level":"info","message":"\u001b[0mPOST /tasks \u001b[32m201\u001b[0m 72.386 ms - 202\u001b[0m","timestamp":"2026-02-10T17:40:11.041Z"}
+{"level":"info","message":"Task deleted: 698b6d7ad053033f545bee63 by UserID: 698b58a4c9a41708266b6abc","timestamp":"2026-02-10T17:40:13.413Z"}
+{"level":"info","message":"\u001b[0mDELETE /tasks/698b6d7ad053033f545bee63 \u001b[32m204\u001b[0m 43.979 ms - -\u001b[0m","timestamp":"2026-02-10T17:40:13.414Z"}
+{"level":"info","message":"Task deleted: 698b60ab7a9188b370826b80 by UserID: 698b58a4c9a41708266b6abc","timestamp":"2026-02-10T17:40:16.852Z"}
+{"level":"info","message":"\u001b[0mDELETE /tasks/698b60ab7a9188b370826b80 \u001b[32m204\u001b[0m 42.668 ms - -\u001b[0m","timestamp":"2026-02-10T17:40:16.853Z"}
